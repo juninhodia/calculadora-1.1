@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Precificação</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .calculator-container {
+            background: #ffffff;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 400px;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .calculate-btn {
+            background-color: #007bff;
+            color: #ffffff;
+            font-weight: 700;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .calculate-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            text-align: center;
+            font-weight: 700;
+            margin-top: 20px;
+            font-size: 1.4em;
+            color: #28a745;
+        }
+
+        .tax-section, .expenses-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .tax-value {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Calculadora de Precificação</h1>
+        <div class="input-group">
+            <label for="valor-bruto">Valor Bruto do Produto (R$):</label>
+            <input type="number" id="valor-bruto" step="0.01">
+        </div>
+        <div class="input-group">
+            <label for="desconto-empresa">Desconto da Empresa (%):</label>
+            <input type="number" id="desconto-empresa" step="0.01">
+        </div>
+        <div class="input-group">
+            <label for="embalagem">Custo de Embalagem (R$):</label>
+            <input type="number" id="embalagem" step="0.01">
+        </div>
+        <div class="input-group">
+            <label for="icms">ICMS (%):</label>
+            <input type="number" id="icms" step="0.01">
+        </div>
+        <div class="input-group">
+            <label for="porcentagem-venda">Porcentagem que Quero Vender (%):</label>
+            <input type="number" id="porcentagem-venda" step="0.01">
+        </div>
+        <button class="calculate-btn" onclick="calculatePrice()">Calcular Preço</button>
+        <div class="result" id="resultado"></div>
+        <div class="result" id="resultado-individual"></div>
+
+        <div class="tax-section" id="tax-section" style="display: none;">
+            <h2>Taxas</h2>
+            <div class="input-group">
+                <label for="taxa-maquininha">Taxa de Maquininha (%):</label>
+                <input type="number" id="taxa-maquininha" step="0.01">
+                <div class="tax-value" id="valor-taxa-maquininha"></div>
+            </div>
+            <div class="input-group">
+                <label for="desconto-cliente">Desconto do Cliente (%):</label>
+                <input type="number" id="desconto-cliente" step="0.01">
+                <div class="tax-value" id="valor-desconto-cliente"></div>
+            </div>
+            <div class="input-group">
+                <label for="taxa-plataforma">Taxa da Plataforma (%):</label>
+                <input type="number" id="taxa-plataforma" step="0.01">
+                <div class="tax-value" id="valor-taxa-plataforma"></div>
+            </div>
+            <div class="input-group">
+                <label for="comissao">Comissão (%):</label>
+                <input type="number" id="comissao" step="0.01">
+                <div class="tax-value" id="valor-comissao"></div>
+            </div>
+            <button class="calculate-btn" onclick="calculateTaxes()">Calcular Taxas</button>
+            <div class="result" id="resultado-taxas"></div>
+        </div>
+
+        <div class="expenses-section" id="expenses-section" style="display: none;">
+            <h2>Gastos Gerais</h2>
+            <div class="input-group">
+                <label for="energia">Energia (R$):</label>
+                <input type="number" id="energia" step="0.01">
+            </div>
+            <div class="input-group">
+                <label for="aluguel">Aluguel (R$):</label>
+                <input type="number" id="aluguel" step="0.01">
+            </div>
+            <div class="input-group">
+                <label for="funcionario">Funcionário (R$):</label>
+                <input type="number" id="funcionario" step="0.01">
+            </div>
+            <div class="input-group">
+                <label for="internet">Internet (R$):</label>
+                <input type="number" id="internet" step="0.01">
+            </div>
+            <div class="input-group">
+                <label for="marketing">Marketing (R$):</label>
+                <input type="number" id="marketing" step="0.01">
+            </div>
+            <div class="input-group">
+                <label for="simples-nacional">Simples Nacional (R$):</label>
+                <input type="number" id="simples-nacional" step="0.01">
+            </div>
+            <div class="input-group">
+                <label for="frete">Frete (R$):</label>
+                <input type="number" id="frete" step="0.01">
+            </div>
+            <button class="calculate-btn" onclick="calculateExpenses()">Calcular Gastos Gerais</button>
+            <div class="result" id="resultado-gastos"></div>
+        </div>
+    </div>
+    <div class="footer">Feito com amor por [Sua Loja]</div>
+
+    <script>
+        function calculatePrice() {
+            const valorBruto = parseFloat(document.getElementById('valor-bruto').value) || 0;
+            const descontoEmpresa = parseFloat(document.getElementById('desconto-empresa').value) || 0;
+            const embalagem = parseFloat(document.getElementById('embalagem').value) || 0;
+            const icms = parseFloat(document.getElementById('icms').value) || 0;
+            const porcentagemVenda = parseFloat(document.getElementById('porcentagem-venda').value) || 100;
+
+            // Calcular desconto e valor com desconto
+            const desconto = valorBruto * (descontoEmpresa / 100);
+            const valorComDesconto = valorBruto - desconto;
+
+            // Aplicar a porcentagem de venda sobre o valor com desconto
+            const valorComMargem = valorComDesconto * (1 + porcentagemVenda / 100);
+
+            // Calcular ICMS e adicionar embalagem
+            const valorICMS = valorComDesconto * (icms / 100);
+            const valorFinal = valorComMargem + valorICMS + embalagem;
+
+            // Exibir resultados
+            document.getElementById('resultado').innerHTML = `
+                Valor com Desconto: R$ ${valorComDesconto.toFixed(2)}<br>
+                Valor Final: R$ ${valorFinal.toFixed(2)}
+            `;
+            document.getElementById('resultado-individual').innerHTML = `
+                Desconto da Empresa: R$ ${desconto.toFixed(2)}<br>
+                ICMS: R$ ${valorICMS.toFixed(2)}
+            `;
+
+            // Mostrar seção de taxas
+            document.getElementById('tax-section').style.display = 'block';
+        }
+
+        function calculateTaxes() {
+            const taxaMaquininha = parseFloat(document.getElementById('taxa-maquininha').value) || 0;
+            const descontoCliente = parseFloat(document.getElementById('desconto-cliente').value) || 0;
+            const taxaPlataforma = parseFloat(document.getElementById('taxa-plataforma').value) || 0;
+            const comissao = parseFloat(document.getElementById('comissao').value) || 0;
+
+            const valorFinalAnterior = parseFloat(document.getElementById('resultado').innerText.split('Valor Final: R$ ')[1]) || 0;
+
+            // Calcular valores individuais das taxas
+            const valorTaxaMaquininha = valorFinalAnterior * (taxaMaquininha / 100);
+            const valorDescontoCliente = valorFinalAnterior * (descontoCliente / 100);
+            const valorTaxaPlataforma = valorFinalAnterior * (taxaPlataforma / 100);
+            const valorComissao = valorFinalAnterior * (comissao / 100);
+
+            // Exibir valores individuais das taxas
+            document.getElementById('valor-taxa-maquininha').innerText = `Valor: R$ ${valorTaxaMaquininha.toFixed(2)}`;
+            document.getElementById('valor-desconto-cliente').innerText = `Valor: R$ ${valorDescontoCliente.toFixed(2)}`;
+            document.getElementById('valor-taxa-plataforma').innerText = `Valor: R$ ${valorTaxaPlataforma.toFixed(2)}`;
+            document.getElementById('valor-comissao').innerText = `Valor: R$ ${valorComissao.toFixed(2)}`;
+
+            // Calcular o total das taxas
+            const valorTaxas = valorTaxaMaquininha + valorDescontoCliente + valorTaxaPlataforma + valorComissao;
+
+            // Calcular o valor final após as taxas
+            const valorFinalComTaxas = valorFinalAnterior + valorTaxas;
+
+            // Exibir resultados das taxas
+            document.getElementById('resultado-taxas').innerHTML = `
+                Total de Taxas: R$ ${valorTaxas.toFixed(2)}<br>
+                Valor Final com Taxas: R$ ${valorFinalComTaxas.toFixed(2)}
+            `;
+
+            // Mostrar seção de gastos gerais
+            document.getElementById('expenses-section').style.display = 'block';
+        }
+
+        function calculateExpenses() {
+            const energia = parseFloat(document.getElementById('energia').value) || 0;
+            const aluguel = parseFloat(document.getElementById('aluguel').value) || 0;
+            const funcionario = parseFloat(document.getElementById('funcionario').value) || 0;
+            const internet = parseFloat(document.getElementById('internet').value) || 0;
+            const marketing = parseFloat(document.getElementById('marketing').value) || 0;
+            const simplesNacional = parseFloat(document.getElementById('simples-nacional').value) || 0;
+            const frete = parseFloat(document.getElementById('frete').value) || 0;
+
+            // Calcular o total dos gastos gerais
+            const totalGastos = energia + aluguel + funcionario + internet + marketing + simplesNacional + frete;
+
+            // Calcular o valor final incluindo gastos gerais
+            const valorFinalComTaxas = parseFloat(document.getElementById('resultado-taxas').innerText.split('Valor Final com Taxas: R$ ')[1]) || 0;
+            const valorFinalComGastos = valorFinalComTaxas + totalGastos;
+
+            // Exibir resultados dos gastos gerais
+            document.getElementById('resultado-gastos').innerHTML = `
+                Total de Gastos: R$ ${totalGastos.toFixed(2)}<br>
+                Valor Final com Gastos Gerais: R$ ${valorFinalComGastos.toFixed(2)}
+            `;
+        }
+    </script>
+</body>
+</html>
